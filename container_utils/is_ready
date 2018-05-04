@@ -1,0 +1,2 @@
+#!/bin/bash
+/usr/lib/postgresql/9.6/bin/psql -U postgres -c "SELECT 1 FROM public.container_ready" postgres

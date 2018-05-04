@@ -1,0 +1,11 @@
+#!/bin/bash
+
+export PGPASSWORD=example
+
+(
+echo "SELECT * FROM (SELECT 'source1' AS tab,* from source1.source ORDER BY id DESC LIMIT 1) as a
+UNION
+SELECT * FROM (SELECT 'source2' AS tab,* from source2.source ORDER BY id DESC LIMIT 1) as b;
+\watch
+"
+) | psql -p 6439 -h localhost -U postgres dest

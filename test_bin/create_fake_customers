@@ -1,0 +1,40 @@
+#!/usr/bin/python3
+
+import psycopg2
+import sys
+import time
+import json
+ 
+def main():
+    conn_string1 = "host='localhost' port='6431' dbname='source1' user='postgres' password='example'"
+    conn_string2 = "host='localhost' port='6432' dbname='source2' user='postgres' password='example'"
+ 
+    print("Connecting to database\n    ->{}".format(conn_string1))
+    conn1 = psycopg2.connect(conn_string1)
+    print("Connecting to database\n    ->{}".format(conn_string2))
+    conn2 = psycopg2.connect(conn_string2)
+    print("Connected!\n")
+
+    sql1 = "INSERT INTO source1.source(payload) VALUES(%s)"
+    sql2 = "INSERT INTO source2.source(payload) VALUES(%s)"
+
+    cur1 = conn1.cursor()
+    cur2 = conn2.cursor()
+
+    with open('/usr/share/dict/words') as fin:
+        for line in fin:
+            time.sleep(1)
+            line = line.rstrip()
+            json_str1 = json.dumps({'name':line,'dat': {'mandate': 'Fake payment details'}})
+            json_str2 = json.dumps({'name':line,'dat': {'PII': '1 Example Street'}})
+            cur1.execute(sql1, (json_str1,))
+            cur2.execute(sql2, (json_str2,))
+            conn1.commit()
+            conn2.commit()
+            print("Inserted!\n")
+
+    print("Done!\n")
+
+ 
+if __name__ == "__main__":
+    main()

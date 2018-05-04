@@ -1,0 +1,42 @@
+version: '3'
+services:
+    source1:
+        image: "postgres"
+        environment:
+            POSTGRES_PASSWORD: example
+        volumes:
+            - ./source1:/docker-entrypoint-initdb.d
+            - ./container_utils:/container_utils
+        healthcheck:
+            test: ["CMD", "/container_utils/is_ready"]
+            interval: 10s
+            timeout: 10s
+            retries: 30
+        ports:
+            - "6431:5432"
+    source2:
+        image: "postgres"
+        environment:
+            POSTGRES_PASSWORD: example
+        volumes:
+            - ./source2:/docker-entrypoint-initdb.d
+            - ./container_utils:/container_utils
+        healthcheck:
+            test: ["CMD", "/container_utils/is_ready"]
+            interval: 10s
+            timeout: 10s
+            retries: 30
+        ports:
+            - "6432:5432"
+    dest:
+        image: "postgres"
+        environment:
+            POSTGRES_PASSWORD: example
+        volumes:
+            - ./dest:/docker-entrypoint-initdb.d
+            - ./container_utils:/container_utils
+        ports:
+            - "6439:5432"
+        depends_on:
+            - "source1"
+            - "source2"
